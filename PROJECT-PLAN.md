@@ -6,11 +6,11 @@
 
 ## 0. 当前接手入口
 
-- 当前状态：Round 1 已完成，进入实现阶段
-- 当前轮次：Round 2
+- 当前状态：v1 + v1.5 + v3 全部完成并推送，进入收尾 / 迭代阶段
+- 当前轮次：Round 3
 - 当前负责人：Claude Code
-- 当前唯一下一步：按 DECISION.md 开始搭建项目骨架（文件结构 + 三个 Skill + 三个 connector + hooks）
-- 决策稿：`DECISION.md`（所有决策已拍板）
+- 当前唯一下一步：补 SECURITY.md，测试新设备 setup.sh 流程，收集用户反馈
+- GitHub：https://github.com/pllimo/ai-control-center
 - 如果换人 / 换 session，请先从这里继续
 
 ---
@@ -136,7 +136,7 @@
 
 ### Phase 1 · 方向收束
 
-- [ ] T1. 用最小必要研究确认项目定位与赛道表达
+- [x] T1. 用最小必要研究确认项目定位与赛道表达
   执行路由：direct-execution
   输入：
   - 本文件
@@ -152,7 +152,7 @@
   - 项目一句话就能讲清楚
   依赖：无
 
-- [ ] T2. 明确项目与 `control-center` / `my-brain` / `my-vault` 的边界
+- [x] T2. 明确项目与 `control-center` / `my-brain` / `my-vault` 的边界
   执行路由：direct-execution
   输入：
   - 用户要求
@@ -166,7 +166,7 @@
 
 ### Phase 2 · 用户引导与模块设计
 
-- [ ] T3. 设计首次 onboarding 问题流
+- [x] T3. 设计首次 onboarding 问题流
   执行路由：direct-execution
   输入：
   - 用户要求“像脑仓一样先通过基础问题了解用户”
@@ -179,7 +179,7 @@
   - 能直接支撑后续 AI 记忆与协作
   依赖：T1
 
-- [ ] T4. 定义两个核心模块
+- [x] T4. 定义两个核心模块
   执行路由：direct-execution
   输入：
   - 用户要求中的 “customer / 用户模块”
@@ -192,7 +192,7 @@
   - 能解释“AI 智力不断升级”具体在什么层面发生
   依赖：T3
 
-- [ ] T5. 定义共享层与私有层
+- [x] T5. 定义共享层与私有层
   执行路由：direct-execution
   输入：
   - 多 AI 共享
@@ -206,7 +206,7 @@
 
 ### Phase 3 · 功能与接入范围
 
-- [ ] T6. 评估现有高频 skills 中哪些值得公开产品化
+- [x] T6. 评估现有高频 skills 中哪些值得公开产品化
   执行路由：direct-execution
   输入：
   - `claude-learnings` 中除 UX 设计以外的高频 skills
@@ -217,7 +217,7 @@
   - 只保留高频、通用、可公开、真正提升用户价值的能力
   依赖：T2
 
-- [ ] T7. 评估 hooks 中哪些和产品功能强相关
+- [x] T7. 评估 hooks 中哪些和产品功能强相关
   执行路由：direct-execution
   输入：
   - `claude-learnings/hooks`
@@ -228,7 +228,7 @@
   - 区分“应该产品化的 hooks”与“只适合留在私人系统里的 hooks”
   依赖：T2
 
-- [ ] T8. 固定 v1 AI 接入范围
+- [x] T8. 固定 v1 AI 接入范围
   执行路由：user-review
   输入：
   - 用户要求的三方 AI 共享
@@ -240,7 +240,7 @@
   - 明确 Claude Code、Codex、OpenClaw 的优先级和接入方式
   依赖：T5、T7
 
-- [ ] T9. 设计跨设备连接方案
+- [x] T9. 设计跨设备连接方案
   执行路由：direct-execution
   输入：
   - Git 同步思路
@@ -255,7 +255,7 @@
 
 ### Phase 4 · 对外专业表达
 
-- [ ] T10. 设计 README 首页结构
+- [x] T10. 设计 README 首页结构
   执行路由：direct-execution
   输入：
   - 前面全部判断
@@ -267,7 +267,7 @@
   - 首页先讲用户痛点，再讲产品承诺，再讲 Quick Start，再讲架构和接入
   依赖：T1、T4、T8、T9
 
-- [ ] T11. 设计安装分层
+- [x] T11. 设计安装分层
   执行路由：direct-execution
   输入：
   - 参考项目的 quick start / full setup 做法
@@ -278,7 +278,7 @@
   - 新手可以先上手，进阶用户可以逐步接满
   依赖：T8、T9
 
-- [ ] T12. 列出开源专业度标准件
+- [x] T12. 列出开源专业度标准件
   执行路由：direct-execution
   输入：
   - GitHub / Open Source Guides 最低标准
@@ -291,7 +291,7 @@
 
 ### Phase 5 · 交付给用户确认
 
-- [ ] T13. 汇总成一份面向用户的决策稿
+- [x] T13. 汇总成一份面向用户的决策稿
   执行路由：user-review
   输入：
   - T1-T12 的结果
@@ -306,10 +306,15 @@
 
 ## 9. 阻塞 / 待确认
 
-- [ ] 项目最终命名还未确认
-- [ ] 哪些高频 skills 真正值得公开，还需要筛选
-- [ ] 哪些 hooks 应做成产品能力，还需要筛选
-- [ ] v1 是否从 day 1 就接入 OpenClaw，还需要权衡
+- [x] 项目最终命名 → Control Center
+- [x] 哪些 skills 值得公开 → Reflect / Init Project / Profile Sync
+- [x] 哪些 hooks 产品化 → session-start / auto-push / sync.sh
+- [x] v1 是否接入 OpenClaw → 是，三个 AI 全接
+
+### 当前待确认
+
+- [ ] SECURITY.md 尚未补充
+- [ ] setup.sh 未经全新设备测试
 
 ---
 
@@ -376,14 +381,24 @@
 - 结果：已完成
 - 验收结论：可交接
 
-### Round 2（当前）
-- 目标：搭建项目骨架，完成可运行的 v1
-- 输入：DECISION.md（所有决策已拍板）
+### Round 2（已完成）
+- 目标：搭建项目骨架，完成可运行的 v1 + v1.5 + v3
+- 结果：全部完成，推送至 https://github.com/pllimo/ai-control-center
 - 核心交付：
-  - 完整文件结构
-  - 三个 Skill（reflect / init-project / profile-sync）
-  - 三个 connector（claude-code / codex / openclaw）
-  - 两个 hook（session-start / auto-push）
-  - Onboarding 问卷流程
-  - setup.sh
-  - README.md（中文主）
+  - [x] 完整文件结构（profile / memory / connectors / skills / hooks）
+  - [x] 三个 Skill（reflect / init-project / profile-sync）
+  - [x] 三个 connector（claude-code / codex / openclaw）
+  - [x] 两个 hook（session-start / auto-push）
+  - [x] Onboarding 问卷（setup.sh）
+  - [x] v1.5：sync.sh + launchd 后台自动同步
+  - [x] v1.5：Reflect 结束自动触发 Profile Sync
+  - [x] v3：visualization.html 记忆仪表盘（原创设计）
+  - [x] v3：scripts/build-viz.py 数据生成脚本
+  - [x] README 重写（面向新用户，含完整 Skill 说明）
+
+### Round 3（当前）
+- 目标：补充遗漏项，收集反馈，规划下一迭代
+- 待完成：
+  - [ ] 补充 SECURITY.md
+  - [ ] 测试全新设备 setup.sh 完整流程
+  - [ ] 收集早期用户反馈
