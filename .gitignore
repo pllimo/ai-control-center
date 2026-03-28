@@ -1,0 +1,18 @@
+# 本地私密数据，不入库
+local/
+.env
+*.env
+.env.*
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志
+*.log
