@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.control-center.sync</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>CONTROL_CENTER_HOME/sync.sh</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>CONTROL_CENTER_HOME</key>
+    <string>CONTROL_CENTER_HOME</string>
+    <key>HOME</key>
+    <string>HOME_PATH</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin</string>
+  </dict>
+
+  <!-- 每 2 分钟运行一次 -->
+  <key>StartInterval</key>
+  <integer>120</integer>
+
+  <!-- 登录时启动 -->
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>CONTROL_CENTER_HOME/.sync-launchd.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>CONTROL_CENTER_HOME/.sync-launchd.log</string>
+</dict>
+</plist>

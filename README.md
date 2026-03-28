@@ -138,11 +138,28 @@ Control Center 内置 3 个核心 Skill，但你可以按需添加更多。
 
 ---
 
+## 可视化记忆仪表盘
+
+运行构建脚本后，用浏览器打开 `visualization.html` 查看你的记忆成长：
+
+```bash
+python3 scripts/build-viz.py
+open visualization.html
+```
+
+展示内容：
+- **用户画像**：你是谁、协作规则一览
+- **记忆时间线**：每条经验的来龙去脉，成长曲线可视
+- **项目档案**：所有项目的当前状态和下一步
+- **目标追踪**：当前主线目标
+
+---
+
 ## 版本规划
 
-- **v1**（当前）：Onboarding + 三个 Skill + 三个 AI 接入 + 跨设备同步
-- **v1.5**：Profile Sync 与 Reflect 自动联动
-- **v3**：可视化记忆图谱
+- **v1**：Onboarding + 三个 Skill + 三个 AI 接入 + 跨设备同步
+- **v1.5**（当前）：后台自动同步（跨 AI 实时同步）+ Profile Sync 与 Reflect 自动联动
+- **v3**：可视化记忆仪表盘 ✅
 
 ---
 

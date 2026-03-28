@@ -288,6 +288,27 @@ PYEOF
 
 echo -e "${GREEN}✓ Hooks 已安装${RESET}"
 
+# ── 安装后台自动同步（launchd） ───────────────────────────────
+echo "安装后台同步任务..."
+
+chmod +x "$CONTROL_CENTER_HOME/sync.sh"
+
+PLIST_TEMPLATE="$CONTROL_CENTER_HOME/launchd/com.control-center.sync.plist"
+PLIST_TARGET="$HOME/Library/LaunchAgents/com.control-center.sync.plist"
+
+if [ -f "$PLIST_TEMPLATE" ]; then
+  # 替换模板中的占位路径
+  sed -e "s|CONTROL_CENTER_HOME|$CONTROL_CENTER_HOME|g" \
+      -e "s|HOME_PATH|$HOME|g" \
+      "$PLIST_TEMPLATE" > "$PLIST_TARGET"
+
+  # 加载 launchd 任务
+  launchctl unload "$PLIST_TARGET" 2>/dev/null
+  launchctl load "$PLIST_TARGET" 2>/dev/null && \
+    echo -e "${GREEN}✓ 后台同步已启动（每 2 分钟自动同步）${RESET}" || \
+    echo -e "${YELLOW}⚠ launchd 加载失败，可手动运行：bash $CONTROL_CENTER_HOME/sync.sh${RESET}"
+fi
+
 # ── Git 初始化提示 ────────────────────────────────────────────
 echo ""
 echo "────────────────────────────────────────"

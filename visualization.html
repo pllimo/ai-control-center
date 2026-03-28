@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control Center · 记忆仪表盘</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222636;
+    --border: #2e3347;
+    --accent: #5b7cf6;
+    --accent2: #7c5bf6;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --text2: #8892aa;
+    --text3: #4a5568;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* ── 顶栏 ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .topbar h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .topbar h1 span { color: var(--accent); }
+  .meta { color: var(--text2); font-size: 12px; }
+
+  /* ── 网格布局 ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 300px 1fr 280px;
+    grid-template-rows: auto auto 1fr;
+    gap: 16px;
+    max-width: 1400px;
+  }
+
+  /* ── 卡片基础 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow: hidden;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 16px;
+  }
+
+  /* ── 用户画像卡片 ── */
+  .profile-card {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+  .profile-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .profile-sub {
+    color: var(--text2);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+  }
+  .thinking-text {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* ── 目标卡片 ── */
+  .goals-card { grid-column: 1; grid-row: 3; }
+  .goal-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .goal-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .goal-text { font-size: 13px; line-height: 1.5; color: var(--text); }
+
+  /* ── 统计行 ── */
+  .stats-row {
+    grid-column: 2 / 4;
+    display: flex;
+    gap: 16px;
+  }
+  .stat-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .stat-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-radius: 8px;
+  }
+  .stat-num {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+  }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+  /* ── 记忆时间线 ── */
+  .memory-card {
+    grid-column: 2;
+    grid-row: 2 / 4;
+  }
+
+  /* 成长曲线（Canvas） */
+  .chart-wrap {
+    margin-bottom: 20px;
+    position: relative;
+    height: 80px;
+  }
+  #growthChart { width: 100%; height: 80px; }
+
+  .chart-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* 记忆条目列表 */
+  .memory-list { max-height: 420px; overflow-y: auto; padding-right: 4px; }
+  .memory-list::-webkit-scrollbar { width: 4px; }
+  .memory-list::-webkit-scrollbar-track { background: transparent; }
+  .memory-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .memory-entry {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .memory-entry:last-child { border-bottom: none; }
+
+  .entry-date-col {
+    width: 54px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .entry-date {
+    font-size: 11px;
+    color: var(--text3);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+  }
+  .entry-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin: 5px auto 0;
+    flex-shrink: 0;
+  }
+  .entry-dot-col { width: 8px; padding-top: 2px; }
+  .entry-line {
+    width: 1px;
+    background: var(--border);
+    margin: 13px auto 0;
+    flex: 1;
+    min-height: 20px;
+  }
+  .timeline-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 8px;
+    flex-shrink: 0;
+  }
+  .entry-content { flex: 1; min-width: 0; }
+  .entry-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .entry-scene { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 6px; }
+  .entry-learned { display: flex; flex-direction: column; gap: 3px; }
+  .entry-learned-item {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(91, 124, 246, 0.1);
+    border-radius: 4px;
+    padding: 2px 8px;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text3);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .empty-state strong { display: block; font-size: 15px; color: var(--text2); margin-bottom: 8px; }
+
+  /* ── 项目卡片 ── */
+  .projects-card { grid-column: 3; grid-row: 2 / 4; }
+  .project-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .project-item:last-child { margin-bottom: 0; }
+  .project-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .project-goal { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
+  .project-stage {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--green);
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 8px;
+  }
+  .project-next { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .project-next-item {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    margin-bottom: 3px;
+  }
+  .project-next-item::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .project-date { font-size: 11px; color: var(--text3); margin-top: 8px; }
+
+  /* ── 规则徽章 ── */
+  .rules-wrap { margin-top: 8px; }
+  .rule-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    border-radius: 4px;
+    padding: 3px 8px;
+    margin: 3px 3px 3px 0;
+    line-height: 1.4;
+  }
+  .rule-do {
+    background: rgba(74, 222, 128, 0.1);
+    color: var(--green);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+  }
+  .rule-dont {
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--yellow);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+  }
+
+  /* ── 加载提示 ── */
+  #loadError {
+    display: none;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--yellow);
+  }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .profile-card { grid-column: 1; grid-row: 1; }
+    .goals-card { grid-column: 2; grid-row: 1; }
+    .stats-row { grid-column: 1 / 3; }
+    .memory-card { grid-column: 1; grid-row: 3; }
+    .projects-card { grid-column: 2; grid-row: 3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Control Center · <span>记忆仪表盘</span></h1>
+  <span class="meta" id="genTime">—</span>
+</div>
+
+<div id="loadError">
+  ⚠ 未找到 viz-data.json。请先运行：<code>python3 scripts/build-viz.py</code>
+</div>
+
+<div class="stats-row" id="statsRow">
+  <div class="stat-card">
+    <div class="stat-icon">🧠</div>
+    <div>
+      <div class="stat-num" id="statMemories">0</div>
+      <div class="stat-label">条记忆</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📁</div>
+    <div>
+      <div class="stat-num" id="statProjects">0</div>
+      <div class="stat-label">个项目</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📅</div>
+    <div>
+      <div class="stat-num" id="statUpdated">—</div>
+      <div class="stat-label">画像最后更新</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- 用户画像 -->
+  <div class="card profile-card">
+    <div class="card-title">用户画像</div>
+    <div class="avatar">👤</div>
+    <div class="profile-name" id="profileIdentity">—</div>
+    <div class="profile-sub" id="profileCollab">—</div>
+    <div class="divider"></div>
+    <div class="label">思维方式</div>
+    <div class="thinking-text" id="profileThinking">—</div>
+    <div class="divider"></div>
+    <div class="label">协作规则</div>
+    <div class="rules-wrap" id="rulesWrap">—</div>
+  </div>
+
+  <!-- 目标 -->
+  <div class="card goals-card">
+    <div class="card-title">当前目标</div>
+    <div id="goalsList">
+      <div class="empty-state"><strong>暂无目标</strong>运行 setup.sh 填写</div>
+    </div>
+  </div>
+
+  <!-- 记忆时间线 -->
+  <div class="card memory-card">
+    <div class="card-title">记忆时间线</div>
+    <div class="chart-wrap">
+      <canvas id="growthChart"></canvas>
+    </div>
+    <div class="chart-label" id="chartLabel">记忆增长曲线（按月）</div>
+    <div class="memory-list" id="memoryList">
+      <div class="empty-state">
+        <strong>记忆为空</strong>
+        用 AI 做几次复盘后，经验会自动积累在这里
+      </div>
+    </div>
+  </div>
+
+  <!-- 项目 -->
+  <div class="card projects-card">
+    <div class="card-title">项目档案</div>
+    <div id="projectsList">
+      <div class="empty-state">
+        <strong>暂无项目</strong>
+        在项目目录打开 Claude Code，会自动创建档案
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 加载数据 ──────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch('./viz-data.json');
+    if (!res.ok) throw new Error('not found');
+    return await res.json();
+  } catch(e) {
+    document.getElementById('loadError').style.display = 'block';
+    return null;
+  }
+}
+
+// ── 渲染用户画像 ──────────────────────────────────────────────
+function renderProfile(profile, rules) {
+  const id = document.getElementById('profileIdentity');
+  const th = document.getElementById('profileThinking');
+  const col = document.getElementById('profileCollab');
+
+  id.textContent = profile.identity || '—（运行 setup.sh 填写）';
+  th.textContent = profile.thinking || '—';
+  col.textContent = profile.collaboration || '—';
+
+  const wrap = document.getElementById('rulesWrap');
+  wrap.innerHTML = '';
+  const doRules = (rules.do || []).slice(0, 3);
+  const dontRules = (rules.dont || []).slice(0, 3);
+
+  if (!doRules.length && !dontRules.length) {
+    wrap.innerHTML = '<span style="color:var(--text3);font-size:12px">暂无规则</span>';
+    return;
+  }
+
+  doRules.forEach(r => {
+    const b = document.createElement('span');
+    b.className = 'rule-badge rule-do';
+    b.textContent = '✓ ' + r;
+    wrap.appendChild(b);
+  });
+  dontRules.forEach(r => {
+    const b = document.createElement('span');
+    b.className = 'rule-badge rule-dont';
+    b.textContent = '✗ ' + r;
+    wrap.appendChild(b);
+  });
+}
+
+// ── 渲染目标 ─────────────────────────────────────────────────
+function renderGoals(goals) {
+  const list = document.getElementById('goalsList');
+  if (!goals || !goals.length) return;
+  list.innerHTML = '';
+  goals.forEach((g, i) => {
+    const div = document.createElement('div');
+    div.className = 'goal-item';
+    div.innerHTML = `
+      <div class="goal-num">${i+1}</div>
+      <div class="goal-text">${escHtml(g)}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── 渲染记忆时间线 ────────────────────────────────────────────
+function renderMemory(entries, byMonth) {
+  // 1. 成长曲线
+  drawGrowthChart(byMonth);
+
+  // 2. 列表
+  const list = document.getElementById('memoryList');
+  if (!entries || !entries.length) return;
+  list.innerHTML = '';
+
+  const reversed = [...entries].reverse(); // 最新在前
+
+  reversed.forEach((e, idx) => {
+    const div = document.createElement('div');
+    div.className = 'memory-entry';
+
+    const dateParts = (e.date || '').split('-');
+    const dateStr = dateParts.length >= 3
+      ? `${dateParts[1]}/${dateParts[2]}`
+      : (e.date || '—');
+    const yearStr = dateParts[0] || '';
+
+    const learnedHtml = (e.learned || [])
+      .map(l => `<span class="entry-learned-item">${escHtml(l)}</span>`)
+      .join('');
+
+    div.innerHTML = `
+      <div class="entry-date-col">
+        <div class="entry-date">${yearStr}<br>${dateStr}</div>
+      </div>
+      <div class="timeline-track">
+        <div class="entry-dot"></div>
+        ${idx < reversed.length - 1 ? '<div class="entry-line"></div>' : ''}
+      </div>
+      <div class="entry-content">
+        <div class="entry-title">${escHtml(e.title || '—')}</div>
+        ${e.scene ? `<div class="entry-scene">${escHtml(e.scene)}</div>` : ''}
+        ${learnedHtml ? `<div class="entry-learned">${learnedHtml}</div>` : ''}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── Canvas 成长曲线 ───────────────────────────────────────────
+function drawGrowthChart(byMonth) {
+  const canvas = document.getElementById('growthChart');
+  if (!byMonth || !byMonth.length) {
+    canvas.style.opacity = '0.3';
+    return;
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 80 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '80px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = rect.width;
+  const H = 80;
+  const pad = { top: 10, right: 16, bottom: 24, left: 28 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+
+  const maxCount = Math.max(...byMonth.map(d => d.count), 1);
+  const n = byMonth.length;
+
+  // 背景网格线
+  ctx.strokeStyle = '#2e3347';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 2; i++) {
+    const y = pad.top + (chartH / 2) * i;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + chartW, y);
+    ctx.stroke();
+  }
+
+  // 计算点位
+  const pts = byMonth.map((d, i) => ({
+    x: pad.left + (n === 1 ? chartW / 2 : (chartW / (n - 1)) * i),
+    y: pad.top + chartH - (d.count / maxCount) * chartH,
+    d
+  }));
+
+  // 渐变填充
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
+  grad.addColorStop(0, 'rgba(91,124,246,0.35)');
+  grad.addColorStop(1, 'rgba(91,124,246,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pad.top + chartH);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, pad.top + chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // 折线
+  ctx.beginPath();
+  ctx.strokeStyle = '#5b7cf6';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.stroke();
+
+  // 数据点
+  pts.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#5b7cf6';
+    ctx.fill();
+    ctx.strokeStyle = '#1a1d27';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // X轴月份标签（最多显示5个）
+  ctx.fillStyle = '#4a5568';
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(n / 5));
+  pts.forEach((p, i) => {
+    if (i % step === 0 || i === n - 1) {
+      const label = p.d.month ? p.d.month.slice(5) : ''; // MM
+      ctx.fillText(label, p.x, H - 4);
+    }
+  });
+}
+
+// ── 渲染项目 ─────────────────────────────────────────────────
+function renderProjects(projects) {
+  const list = document.getElementById('projectsList');
+  if (!projects || !projects.length) return;
+  list.innerHTML = '';
+
+  projects.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'project-item';
+
+    const nextHtml = (p.next_steps || [])
+      .map(s => `<div class="project-next-item">${escHtml(s)}</div>`)
+      .join('');
+
+    div.innerHTML = `
+      <div class="project-name">${escHtml(p.name)}</div>
+      ${p.goal ? `<div class="project-goal">${escHtml(p.goal)}</div>` : ''}
+      ${p.stage ? `<span class="project-stage">${escHtml(p.stage)}</span>` : ''}
+      ${nextHtml ? `<div class="project-next">${nextHtml}</div>` : ''}
+      ${p.last_updated ? `<div class="project-date">最后更新 ${p.last_updated}</div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── 渲染统计 ─────────────────────────────────────────────────
+function renderStats(stats) {
+  document.getElementById('statMemories').textContent = stats.total_memories || 0;
+  document.getElementById('statProjects').textContent = stats.total_projects || 0;
+  document.getElementById('statUpdated').textContent = stats.profile_updated || '—';
+}
+
+// ── 工具函数 ─────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── 主流程 ───────────────────────────────────────────────────
+async function main() {
+  const data = await loadData();
+  if (!data) return;
+
+  document.getElementById('genTime').textContent = '更新于 ' + (data.generated_at || '—');
+  renderProfile(data.profile || {}, data.rules || {});
+  renderGoals(data.goals);
+  renderMemory(data.memory_entries || [], data.memory_by_month || []);
+  renderProjects(data.projects || []);
+  renderStats(data.stats || {});
+}
+
+main();
+
+// 窗口 resize 时重绘图表
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(async () => {
+    const res = await fetch('./viz-data.json').catch(() => null);
+    if (res) {
+      const data = await res.json().catch(() => null);
+      if (data) drawGrowthChart(data.memory_by_month || []);
+    }
+  }, 200);
+});
+</script>
+</body>
+</html>
